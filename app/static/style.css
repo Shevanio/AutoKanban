@@ -1,0 +1,26 @@
+.kanban-board {
+    min-height: 70vh;
+}
+
+.task {
+    transition: transform 0.2s;
+    margin-bottom: 10px;
+}
+
+.task:hover {
+    transform: translateY(-5px);
+    cursor: move;
+}
+
+.card-header {
+    font-weight: bold;
+}
+
+#notifications .toast {
+    min-width: 250px;
+}
+
+.card {
+    min-width: 300px;  /* Ancho mínimo para cada columna */
+    margin: 0 10px;
+}

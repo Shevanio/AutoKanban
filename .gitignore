@@ -1,0 +1,6 @@
+/__pycache__/
+/app/__pycache__/
+/venv_AutoKanban/
+/instance/
+client_secret.json
+.env

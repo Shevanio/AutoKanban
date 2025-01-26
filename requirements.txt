@@ -1,0 +1,8 @@
+flask
+flask-sqlalchemy
+flask-login
+flask-socketio
+python-dotenv
+google-api-python-client
+google-auth-oauthlib
+python-dotenv

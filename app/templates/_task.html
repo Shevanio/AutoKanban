@@ -1,0 +1,16 @@
+<div class="task card mb-3" data-task-id="{{ task.id }}" draggable="true"></div>
+    <div class="card-body">
+        <h5 class="card-title">{{ task.title }}</h5>
+        <p class="card-text">{{ task.description }}</p>
+        {% if task.due_date %}
+            <p class="text-muted">
+                <i class="fas fa-clock"></i> {{ task.due_date.strftime('%d/%m/%Y %H:%M') }}
+            </p>
+        {% endif %}
+        <div class="d-flex justify-content-between">
+            <a href="/update_task/{{ task.id }}/done" class="btn btn-sm btn-success">
+                <i class="fas fa-check"></i>
+            </a>
+        </div>
+    </div>
+</div>

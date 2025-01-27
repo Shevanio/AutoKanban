@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request
+from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_user, logout_user, current_user, login_required
 from app import db, login_manager
 from app.models import User, Task
@@ -24,11 +24,11 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
-        # TODO: haz bcrypt.check_password_hash si tienes bcrypt, no guardes password plano
-        # if user and user.password_hash == form.password.data:
         if user and bcrypt.check_password_hash(user.password_hash, form.password.data):
             login_user(user)
             return redirect(url_for('routes_bp.kanban'))
+        else:
+            flash('Usuario o contraseña incorrectos', 'danger')
     return render_template('login.html', form=form)
 
 @routes_bp.route('/kanban')

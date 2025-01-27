@@ -2,6 +2,9 @@ flask
 flask-sqlalchemy
 flask-login
 flask-socketio
+flask_bcrypt
+flask_wtf
+wtforms
 python-dotenv
 google-api-python-client
 google-auth-oauthlib

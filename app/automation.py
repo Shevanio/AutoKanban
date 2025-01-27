@@ -22,18 +22,19 @@ def get_gmail_service(user):
     SCOPES = ['https://www.googleapis.com/auth/gmail.send']
     creds = None
 
-    # Intenta cargar credenciales existentes
+    # Intenta cargar token de Gmail
     if user.gmail_token:
         info = json.loads(user.gmail_token)
+        # Esto requiere refresh_token dentro del JSON
         creds = Credentials.from_authorized_user_info(info, SCOPES)
 
-    # Si no hay credenciales o no son válidas
+    # Si no hay creds o están caducadas/invalid
     if not creds or not creds.valid:
         flow = InstalledAppFlow.from_client_secrets_file(
             'client_secret.json',
             SCOPES
         )
-        # Solicitar acceso offline y forzar nueva autorización para obtener refresh_token
+        # Pedimos refresh_token con offline + consent
         creds = flow.run_local_server(
             port=5001,
             host='localhost',
@@ -53,35 +54,36 @@ def send_email_notification(task):
     try:
         service = get_gmail_service(task.author)
         message = EmailMessage()
-        message.set_content(f"Tarea completada: {task.title}\nDescripción: {task.description}")
+        message.set_content(
+            f"Tarea completada: {task.title}\nDescripción: {task.description}"
+        )
         message['To'] = task.author.email
         message['Subject'] = f"✅ Tarea completada: {task.title}"
 
         raw = base64.urlsafe_b64encode(message.as_bytes()).decode()
-        service.users().messages().send(
-            userId='me',
-            body={'raw': raw}
-        ).execute()
+        service.users().messages().send(userId='me', body={'raw': raw}).execute()
+
     except Exception as e:
-        print(f"Error enviando email: {str(e)}")
+        print(f"Error enviando email: {e}")
 
 
 def get_google_calendar_service(user):
     SCOPES = ['https://www.googleapis.com/auth/calendar.events']
     creds = None
 
-    # Intenta cargar credenciales existentes
+    # Intenta cargar token de Calendar
     if user.google_calendar_token:
         info = json.loads(user.google_calendar_token)
+        # Esto requiere refresh_token dentro del JSON
         creds = Credentials.from_authorized_user_info(info, SCOPES)
 
-    # Si no hay credenciales o no son válidas
+    # Si no hay creds o están caducadas/invalid
     if not creds or not creds.valid:
         flow = InstalledAppFlow.from_client_secrets_file(
             'client_secret.json',
             SCOPES
         )
-        # Solicitar acceso offline y forzar nueva autorización para obtener refresh_token
+        # Pedimos refresh_token con offline + consent
         creds = flow.run_local_server(
             port=5001,
             host='localhost',
@@ -91,7 +93,7 @@ def get_google_calendar_service(user):
             access_type='offline',
             prompt='consent'
         )
-        user.google_calendar_token = creds.to_json()  # Aquí ya debe venir el refresh_token
+        user.google_calendar_token = creds.to_json()
         db.session.commit()
 
     return build('calendar', 'v3', credentials=creds)

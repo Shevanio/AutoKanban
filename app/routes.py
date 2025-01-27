@@ -4,23 +4,34 @@ from app import db, socketio, login_manager
 from app.models import User, Task
 from app.automation import execute_automations, sync_google_calendar_task
 from datetime import datetime
+from app.forms import LoginForm
+from app.automation import sync_google_calendar_task
+from app import db, login_manager
 
 def register_routes(app):
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+
+
     @app.route('/')
     def home():
+        if current_user.is_authenticated:
+            return redirect(url_for('kanban'))
         return redirect(url_for('login'))
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
-        if request.method == 'POST':
-            user = User.query.filter_by(email=request.form['email']).first()
-            if user and user.password_hash == request.form['password']:
+        form = LoginForm()
+        if form.validate_on_submit():
+            user = User.query.filter_by(username=form.username.data).first()
+            if user and user.password_hash == form.password.data:  # O usa bcrypt.check_password_hash
                 login_user(user)
                 return redirect(url_for('kanban'))
-            flash('Credenciales incorrectas')
-        return render_template('login.html')
+        return render_template('login.html', form=form)
 
     @app.route('/logout')
+    @login_required
     def logout():
         logout_user()
         return redirect(url_for('login'))
@@ -28,23 +39,21 @@ def register_routes(app):
     @app.route('/kanban')
     @login_required
     def kanban():
-        tasks = current_user.tasks
+        tasks = Task.query.filter_by(author_id=current_user.id).all()
         return render_template('kanban.html', tasks=tasks)
 
     @app.route('/add_task', methods=['POST'])
     @login_required
     def add_task():
-        due_date_str = request.form.get('due_date')
-        due_date = datetime.fromisoformat(due_date_str) if due_date_str else None
-        task = Task(
-            title=request.form['title'],
-            description=request.form['description'],
-            due_date=due_date,
-            user_id=current_user.id
-        )
-        db.session.add(task)
+        title = request.form.get('title')
+        description = request.form.get('description')
+        due_date = request.form.get('due_date')  # Maneja conversión a datetime
+        new_task = Task(title=title, description=description, author_id=current_user.id)
+        db.session.add(new_task)
         db.session.commit()
-        sync_google_calendar_task(task)
+
+        # Sincroniza con Calendar
+        sync_google_calendar_task(new_task)
         return redirect(url_for('kanban'))
 
     @app.route('/update_task/<int:task_id>/<new_status>')

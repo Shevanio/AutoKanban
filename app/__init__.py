@@ -8,7 +8,6 @@ from config import Config
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
-login_manager.login_view = 'login'
 socketio = SocketIO()
 
 def create_app():
@@ -21,7 +20,11 @@ def create_app():
     socketio.init_app(app)
 
     with app.app_context():
-        from . import models, routes
+        from . import models
         db.create_all()
+
+        # Importa y registra el blueprint después de crear la app
+    from app.routes import routes_bp
+    app.register_blueprint(routes_bp)
 
     return app

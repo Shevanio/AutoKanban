@@ -4,7 +4,7 @@ from app import db, login_manager
 from app.models import User, Task
 from app.forms import LoginForm
 from app.automation import sync_google_calendar_task
-from flask_bcrypt import bcrypt
+from app import bcrypt
 
 # Crea el blueprint:
 routes_bp = Blueprint('routes_bp', __name__)
@@ -49,6 +49,25 @@ def add_task():
     # Sincroniza con Calendar
     sync_google_calendar_task(new_task)
     return redirect(url_for('routes_bp.kanban'))
+
+@routes_bp.route('/update_task/<int:task_id>/<status>', methods=['GET', 'POST'])
+@login_required
+def update_task(task_id, status):
+    # Buscar la tarea que pertenezca al usuario logueado
+    task = Task.query.filter_by(id=task_id, author_id=current_user.id).first()
+    if not task:
+        return 'Tarea no encontrada', 404
+
+    # Actualizar el estado
+    task.status = status
+    db.session.commit()
+
+    # Si la tarea pasa a 'done', ejecuta automatizaciones
+    if task.status == 'done':
+        from app.automation import execute_automations
+        execute_automations(task)
+
+    return 'OK'
 
 @routes_bp.route('/logout')
 @login_required

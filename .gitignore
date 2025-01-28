@@ -4,3 +4,6 @@
 /instance/
 client_secret.json
 .env
+*.pyc
+*.sqlite
+kanban.db

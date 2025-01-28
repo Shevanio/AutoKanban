@@ -8,13 +8,13 @@
             <button class="btn btn-success" onclick="syncGoogleCalendar()">
                 <i class="fas fa-calendar-alt"></i> Sincronizar Calendario
             </button>
-            <a href="{{ url_for('logout') }}" class="btn btn-danger">
+            <a href="{{ url_for('routes_bp.logout') }}" class="btn btn-danger">
                 <i class="fas fa-sign-out-alt"></i> Salir
             </a>
         </div>
     </div>
 
-    <form method="POST" action="{{ url_for('add_task') }}">
+    <form method="POST" action="{{ url_for('routes_bp.add_task') }}">
         <div class="row mb-4">
             <div class="col-md-4">
                 <input type="text" class="form-control" name="title" placeholder="Título" required>

@@ -1,33 +1,18 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Iniciar Sesión</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <h1>Login</h1>
-    <form method="POST">
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Login</h2>
+    <form method="POST" action="{{ url_for('main.login') }}">
         {{ form.hidden_tag() }}
-        <p>
-            {{ form.username.label }}<br>
-            {{ form.username(size=30) }}
-        </p>
-        <p>
-            {{ form.password.label }}<br>
-            {{ form.password(size=30) }}
-        </p>
-        <p>
-            {{ form.submit() }}
-        </p>
+        <div class="form-group">
+            {{ form.email.label }}
+            {{ form.email(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.password.label }}
+            {{ form.password(class="form-control") }}
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
     </form>
-    {% with messages = get_flashed_messages(category_filter=['danger']) %}
-        {% if messages %}
-            <ul style="color:red;">
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
-</body>
-</html>
+    <p>Don't have an account? <a href="{{ url_for('main.register') }}">Register here</a></p>
+{% endblock %}

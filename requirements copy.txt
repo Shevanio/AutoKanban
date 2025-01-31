@@ -10,3 +10,21 @@ python-dotenv
 google-api-python-client
 google-auth-oauthlib
 python-dotenv
+
+###
+# Complete and updated `requirements.txt` file
+
+# # Core dependencies
+# Flask==2.3.2           # Updated to a secure and stable version
+# Flask-SQLAlchemy==3.0.5  # Database integration
+# Flask-WTF==1.1.1        # Form handling
+# Werkzeug==2.3.6         # WSGI utility library
+
+# # Security dependencies
+# cryptography==41.0.0    # For encryption and secure data handling
+
+# # Email handling
+# Flask-Mail==0.9.1       # Email support
+
+# # Additional dependencies
+# python-dotenv==1.0.0    # Environment variable management

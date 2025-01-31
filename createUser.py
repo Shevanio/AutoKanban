@@ -1,17 +1,28 @@
-# Dentro de venv, en la raíz del proyecto
-#python
-from app import create_app, db, bcrypt
+from app import db
 from app.models import User
-app = create_app()
-ctx = app.app_context()
-ctx.push()
+from werkzeug.security import generate_password_hash
 
-# Crear un usuario
-hashed_pw = bcrypt.generate_password_hash("mi_password").decode('utf-8')
-u = User(username="david", email="david@example.com", password_hash=hashed_pw)
-db.session.add(u)
-db.session.commit()
+def create_user(username, email, password):
+    """Create a new user and add them to the database."""
+    try:
+        hashed_password = generate_password_hash(password)
+        user = User(username=username, email=email, password=hashed_password)
+        db.session.add(user)
+        db.session.commit()
+        print(f"User {username} created successfully.")
+    except Exception as e:
+        db.session.rollback()
+        print(f"Failed to create user {username}: {e}")
+    finally:
+        db.session.close()
 
-# Verificar
-u.password_hash
-#'$2b$12$...'
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Create a new user.")
+    parser.add_argument("username", type=str, help="Username for the new user")
+    parser.add_argument("email", type=str, help="Email for the new user")
+    parser.add_argument("password", type=str, help="Password for the new user")
+
+    args = parser.parse_args()
+    create_user(args.username, args.email, args.password)

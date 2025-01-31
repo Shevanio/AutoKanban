@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Create Task</h2>
+    <form method="POST" action="{{ url_for('main.create_task') }}">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.name.label }}
+            {{ form.name(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.description.label }}
+            {{ form.description(class="form-control", rows=3) }}
+        </div>
+        <div class="form-group">
+            {{ form.start_time.label }}
+            {{ form.start_time(class="form-control", placeholder="YYYY-MM-DD HH:MM:SS") }}
+        </div>
+        <div class="form-group">
+            {{ form.end_time.label }}
+            {{ form.end_time(class="form-control", placeholder="YYYY-MM-DD HH:MM:SS") }}
+        </div>
+        <div class="form-group">
+            {{ form.assigned_to_email.label }}
+            {{ form.assigned_to_email(class="form-control") }}
+        </div>
+        <button type="submit" class="btn btn-success">Create Task</button>
+    </form>
+    <a href="{{ url_for('main.home') }}" class="btn btn-secondary">Back to Home</a>
+{% endblock %}

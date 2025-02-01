@@ -25,7 +25,7 @@ def create_app(config_class="config.DevelopmentConfig"):
     db.init_app(app)
     mail.init_app(app)
     csrf.init_app(app)
-    db.init_app(app)
+    # db.init_app(app)
     login_manager.init_app(app)  # Asegura que LoginManager está inicializado
     login_manager.login_view = "main.login"  # Página de inicio de sesión
 

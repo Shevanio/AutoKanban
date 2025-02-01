@@ -5,13 +5,18 @@ from app.models import User, Task
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+from flask_wtf import FlaskForm
+
+class DeleteForm(FlaskForm):
+    pass
 
 main_bp = Blueprint('main', __name__)
 
 @main_bp.route("/", methods=['GET'])
 def home():
     tasks = Task.query.filter_by(user_id=current_user.id).all() if current_user.is_authenticated else []
-    return render_template('home.html', tasks=tasks)
+    form = DeleteForm()
+    return render_template('home.html', tasks=tasks, form=form)
 
 @main_bp.route("/register", methods=['GET', 'POST'])
 def register():
@@ -103,4 +108,4 @@ def update_task(task_id):
         form.start_time.data = task.start_time
         form.end_time.data = task.end_time
         form.assigned_to_email.data = task.assigned_to_email
-    return render_template('update_task.html', title='Update Task', form=form)
+    return render_template('update_task.html', title='Update Task', form=form, task=task)
